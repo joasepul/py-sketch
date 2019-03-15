@@ -1,5 +1,7 @@
 from tkinter import *
 import math
+from PIL import ImageGrab, ImageTk
+import cv2
 
 master = Tk()
 
@@ -12,7 +14,7 @@ def roundup_10(x):
 def rounddown_10(x):
     return int(math.floor(x / 10.0)) * 10
 
-w = Canvas(master,width=canvas_width,height=canvas_height, cursor="none")
+w = Canvas(master,width=canvas_width,height=canvas_height, cursor="none", background="white")
 
 w.pack()
 
@@ -31,11 +33,26 @@ s.pack()
 
 def erase_btn_click(event=None):
     print("erase")
+    print(w.winfo_rootx())
     w.delete("all")
+
+def save_canvas(event=None):
+
+    x1 = w.winfo_rootx() + w.winfo_x()
+    y1 = w.winfo_rooty() + w.winfo_y()
+    x2 = x1 + w.winfo_width()
+    y2 = y1 + w.winfo_height()
+
+    ImageGrab.grab(bbox=(x1,y1,x2,y2)).save("out_snapsave.jpg")
+    img = cv2.imread("out_snapsave.jpg")
+
+    print(x1,x2,y1,y2)
 
 
 erase_button = Button(master, text="clear", command=erase_btn_click)
 erase_button.pack()
+save_button = Button(master, text="save", command=save_canvas)
+save_button.pack()
 
 # def moveCursor(event):
 #     # (x1,y1,x2,y2) = w.coords(cursor)
@@ -153,6 +170,8 @@ w.bind('<Button-1>',drawLine)
 w.bind('<B1-Motion>',drawLine)
 w.bind('<Button-2>',eraseLine)
 w.bind('<B2-Motion>',eraseLine)
+w.bind('<Button-3>',eraseLine)
+w.bind('<B3-Motion>',eraseLine)
 w.bind('<Motion>', move_cursor)
 w.bind('<ButtonRelease-1>',endLine_draw)
 w.bind('<ButtonRelease-2>',endLine_draw)
